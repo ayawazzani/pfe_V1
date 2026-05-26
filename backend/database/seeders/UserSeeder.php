@@ -16,36 +16,28 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Admin user
-        User::create([
-            'name' => 'Admin',
-            'email' => 'admin@restaurant.com',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-        ]);
+        
 
         // Kitchen Chef
         User::create([
-            'name' => 'Chef',
-            'email' => 'chef@restaurant.com',
-            'password' => Hash::make('password'),
-            'role' => 'kitchen',
+            'name' => 'Alex Martin',
+            'email' => 'admin@restoyh.com',
+            'password' => Hash::make('admin@YH20'),
+            'role' => 'admin',
         ]);
 
-        // Waiter
         User::create([
-            'name' => 'Serveur',
-            'email' => 'waiter@restaurant.com',
-            'password' => Hash::make('password'),
+            'name' => 'James Wilson',
+            'email' => 'waiter@restoyh.com',
+            'password' => Hash::make('waiter@YH20'),
             'role' => 'waiter',
         ]);
 
-        // Customer
         User::create([
-            'name' => 'Customer',
-            'email' => 'customer@restaurant.com',
-            'password' => Hash::make('password'),
-            'role' => 'customer',
+            'name' => 'Chef Marie',
+            'email' => 'kitchen@restoyh.com',
+            'password' => Hash::make('kitchen@YH20'),
+            'role' => 'kitchen',
         ]);
     }
 }

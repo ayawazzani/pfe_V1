@@ -17,6 +17,7 @@ return new class extends Migration
         $table->foreignId('product_id')->constrained()->onDelete('cascade');
         $table->integer('quantity')->default(1);
         $table->decimal('price', 8, 2); // سعر المنتج وقت الطلب
+        $table->decimal('subtotal', 8, 2)->default(0);
         $table->text('note')->nullable(); // ملاحظات الزبون
         $table->timestamps();
     });

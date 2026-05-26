@@ -11,11 +11,11 @@ class Order extends Model
     protected $fillable = [
         'table_id',
         'status',
-        'total',
+        'total_amount',
     ];
 
     /**
-     * Get the restaurant table this order is for.
+     * Table relation
      */
     public function table(): BelongsTo
     {
@@ -23,15 +23,15 @@ class Order extends Model
     }
 
     /**
-     * Get all order items in this order.
+     * Order items relation
      */
-    public function orderItems(): HasMany
+    public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }
 
     /**
-     * Get all payments for this order.
+     * Payments relation
      */
     public function payments(): HasMany
     {

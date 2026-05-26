@@ -12,11 +12,12 @@ class OrderItem extends Model
         'product_id',
         'quantity',
         'price',
+        'subtotal',
         'note',
     ];
 
     /**
-     * Get the order this item belongs to.
+     * Order relation
      */
     public function order(): BelongsTo
     {
@@ -24,7 +25,7 @@ class OrderItem extends Model
     }
 
     /**
-     * Get the product for this order item.
+     * Product relation
      */
     public function product(): BelongsTo
     {

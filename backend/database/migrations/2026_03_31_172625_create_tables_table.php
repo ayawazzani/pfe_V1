@@ -10,14 +10,15 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::create('tables', function (Blueprint $table) {
-        $table->id();
-        $table->string('name'); // اسم الطاولة، مثلاً "Table 1"
-        $table->integer('seats')->default(4); // عدد المقاعد
-        $table->timestamps();
-    });
-}
+    {
+        Schema::create('tables', function (Blueprint $table) {
+            $table->id();
+            $table->string('name'); // Table 1, Table 2...
+            $table->string('qr_code')->nullable(); // link QR
+            $table->enum('status', ['free', 'occupied'])->default('free');
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.

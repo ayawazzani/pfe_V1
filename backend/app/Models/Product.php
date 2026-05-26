@@ -3,32 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
     protected $fillable = [
+        'category_id',
         'name',
+        'slug',
         'description',
         'price',
-        'stock',
-        'category_id',
+        'stock_quantity',
+        'image',
+        'status',
     ];
+    protected $appends = ['image_url'];
 
-    /**
-     * Get the category this product belongs to.
-     */
-    public function category(): BelongsTo
+    public function getImageUrlAttribute()
     {
-        return $this->belongsTo(Category::class);
+        return $this->image ? asset('storage/' . $this->image) : null;
     }
 
-    /**
-     * Get all order items for this product.
-     */
-    public function orderItems(): HasMany
+    public function category()
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->belongsTo(Category::class);
     }
 }
