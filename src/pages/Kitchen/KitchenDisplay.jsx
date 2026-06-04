@@ -124,7 +124,7 @@ export default function KitchenDisplay() {
                 action={
                   <button
                     className="kitchen-action-btn accept"
-                    onClick={() => updateOrderStatus(order.id, 'accepted')}
+                    onClick={() => updateOrderStatus(order.realId, 'accepted')}
                   >
                     Accept <ArrowRight size={16} />
                   </button>
@@ -150,7 +150,7 @@ export default function KitchenDisplay() {
                 action={
                   <button
                     className="kitchen-action-btn start"
-                    onClick={() => updateOrderStatus(order.id, 'preparing')}
+                    onClick={() => updateOrderStatus(order.realId, 'preparing')}
                   >
                     Start Prep <ArrowRight size={16} />
                   </button>
@@ -176,7 +176,7 @@ export default function KitchenDisplay() {
                 action={
                   <button
                     className="kitchen-action-btn mark-ready"
-                    onClick={() => updateOrderStatus(order.id, 'ready')}
+                    onClick={() => updateOrderStatus(order.realId, 'ready')}
                   >
                     Mark Ready <ArrowRight size={16} />
                   </button>

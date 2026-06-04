@@ -52,14 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // KITCHEN ROUTES
     // =========================
 
-    Route::middleware('role:kitchen')->group(function () {
-
-        Route::get('/orders', [OrderController::class, 'index']);
-
-        Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus']);
-        Route::put('/orders/{order}/status', [OrderController::class, 'updateStatus']);
-
-    });
+   
 
 
     // =========================
@@ -75,14 +68,19 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
-    // =========================
-    // ADMIN + WAITER
-    // =========================
+   // =========================
+// ORDERS ROUTES
+// =========================
 
-    Route::middleware('role:admin,waiter')->group(function () {
+Route::middleware('role:admin,kitchen,waiter')->group(function () {
+    Route::get('/orders', [OrderController::class, 'index']);
+});
 
-        Route::get('/orders', [OrderController::class, 'index']);
+Route::middleware('role:admin,kitchen')->group(function () {
+    Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus']);
+    Route::put('/orders/{order}/status', [OrderController::class, 'updateStatus']);
+});
 
-    });
+    
 
 });

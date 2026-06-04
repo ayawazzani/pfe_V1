@@ -10,7 +10,7 @@ const formatOrder = (order) => ({
   status: order.status,
   tableNumber: order.table?.id || order.table_id,
   createdAt: order.created_at,
-  total: Number(order.total),
+  total: Number(order.total_amount ?? order.total ?? 0),
   items: order.items.map(item => ({
     quantity: item.quantity,
     name: item.product?.name || 'Unknown product',
@@ -52,6 +52,9 @@ export function OrdersProvider({ children }) {
 
   socket.on('order_ready', () => {
     fetchOrders();
+  });
+  socket.onAny((event, data) => {
+    console.log('SOCKET EVENT:', event, data);
   });
 
   socket.on('order_delivered', () => {
