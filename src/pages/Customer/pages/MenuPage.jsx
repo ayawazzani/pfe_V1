@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Search, Star, Clock, Plus } from 'lucide-react';
 import DishDetailsPage from './DishDetailsPage';
+import { useSearchParams } from 'react-router-dom';
+import api from '../../../api';
 
 
 const MOCK_CATEGORIES = ['All', 'Starters', 'Mains', 'Drinks', 'Desserts'];
@@ -68,15 +70,67 @@ export const MOCK_MENU = [
 ];
 
 export default function MenuPage() {
+    const [menu, setMenu] = useState([]);
+    const [categories, setCategories] = useState(['All']);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDish, setSelectedDish] = useState(null);
 
-    const filteredMenu = MOCK_MENU.filter(item => {
+    const filteredMenu = menu.filter(item => {
         const matchesCategory = activeCategory === 'All' || item.category === activeCategory;
         const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesCategory && matchesSearch;
     });
+    const [searchParams] = useSearchParams();
+    const tableId = searchParams.get('table_id');
+    useEffect(() => {
+    const fetchMenu = async () => {
+        try {
+            setLoading(true);
+
+            const response = await api.get(`/public/menu/${tableId || 1}`);
+
+            const products = response.data.menu || [];
+
+            const formattedMenu = products.map(product => ({
+                id: product.id,
+                name: product.name,
+                description: product.description || '',
+                price: Number(product.price),
+                rating: 4.8,
+                time: '10m',
+                image: product.image_url,
+                category: product.category?.name || 'Other',
+                extras: []
+            }));
+
+            setMenu(formattedMenu);
+
+            const uniqueCategories = [
+                'All',
+                ...new Set(formattedMenu.map(item => item.category))
+            ];
+
+            setCategories(uniqueCategories);
+        } catch (err) {
+            setError('Failed to load menu');
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchMenu();
+}, [tableId]);
+if (loading) {
+    return <div className="menu-page">Loading menu...</div>;
+}
+
+if (error) {
+    return <div className="menu-page">{error}</div>;
+}
 
     return (
         <div className="menu-page">
@@ -91,7 +145,7 @@ export default function MenuPage() {
                 </div>
                 <div className="table-badge">
                     <div className="dot"></div>
-                    <span>Table 5</span>
+                    <span>{tableId ? `Table ${tableId}` : 'No table'}</span>
                 </div>
             </div>
 
@@ -110,7 +164,7 @@ export default function MenuPage() {
 
             {/* Category Pills */}
             <div className="category-scroll">
-                {MOCK_CATEGORIES.map(category => (
+                {categories.map(category => (
                     <button
                         key={category}
                         onClick={() => setActiveCategory(category)}
@@ -179,7 +233,7 @@ export default function MenuPage() {
             {/* Dish Details Modal */}
             {selectedDish && (
                 <DishDetailsPage
-                    dishId={selectedDish}
+                    dish={menu.find(item => item.id === selectedDish)}
                     onClose={() => setSelectedDish(null)}
                 />
             )}

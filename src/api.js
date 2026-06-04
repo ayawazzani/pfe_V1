@@ -2,26 +2,22 @@ import axios from 'axios';
 
 // Create an Axios instance pointing to the Laravel API
 const api = axios.create({
-    // VITE_API_URL should be defined in a .env file (e.g., http://localhost:8000/api)
-    // If it's not defined, it defaults to localhost:8000/api
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
-    
-    // Important: The following setting allows sending cookies (required by Laravel Sanctum for auth)
-    withCredentials: true,
-    
+    baseURL: 'http://127.0.0.1:8000/api',
+    withCredentials: false,
     headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json'
     }
 });
 
 // Optional: Add a request interceptor (e.g., to attach auth tokens manually if not using Sanctum cookies)
 api.interceptors.request.use(config => {
-    // You could get a token from localStorage and attach it here
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //     config.headers.Authorization = `Bearer ${token}`;
-    // }
+    const token = localStorage.getItem('token');
+
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+
     return config;
 });
 

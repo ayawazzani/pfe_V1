@@ -19,7 +19,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::get('/public/menu/{table}', [PublicMenuController::class, 'show']);
-
+Route::post('/orders', [OrderController::class, 'store']);
 
 // =========================
 // AUTH ROUTES
@@ -66,9 +66,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // WAITER ROUTES
     // =========================
 
-    Route::middleware('role:waiter')->group(function () {
+    Route::middleware('role:admin,waiter')->group(function () {
 
-        Route::post('/orders', [OrderController::class, 'store']);
+        //Route::post('/orders', [OrderController::class, 'store']);
 
         Route::post('/payments', [PaymentController::class, 'store']);
 

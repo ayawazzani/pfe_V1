@@ -1,24 +1,79 @@
-import { createContext, useContext, useState, useCallback } from 'react';
-import { initialOrders } from '../data/mockData';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import api from '../api';
+import { io } from 'socket.io-client';
 
 const OrdersContext = createContext(null);
 
-export function OrdersProvider({ children }) {
-  const [orders, setOrders] = useState(initialOrders);
+const formatOrder = (order) => ({
+  id: `ORD-${String(order.id).padStart(3, '0')}`,
+  realId: order.id,
+  status: order.status,
+  tableNumber: order.table?.id || order.table_id,
+  createdAt: order.created_at,
+  total: Number(order.total),
+  items: order.items.map(item => ({
+    quantity: item.quantity,
+    name: item.product?.name || 'Unknown product',
+    notes: item.special_instructions || null,
+    options: [],
+  })),
+});
 
-  const updateOrderStatus = useCallback((orderId, newStatus) => {
-    setOrders(prev =>
-      prev.map(order =>
-        order.id === orderId
-          ? {
-              ...order,
-              status: newStatus,
-              ...(newStatus === 'delivered' ? { deliveredAt: new Date().toISOString() } : {}),
-            }
-          : order
-      )
-    );
-  }, []);
+export function OrdersProvider({ children }) {
+  const [orders, setOrders] = useState([]);
+
+  const fetchOrders = useCallback(async () => {
+  try {
+    console.log('Fetching orders...');
+
+    const response = await api.get('/orders');
+
+    console.log('Orders API response:', response.data);
+
+    const formatted = response.data.data.map(formatOrder);
+
+    console.log('Formatted orders:', formatted);
+
+    setOrders(formatted);
+  } catch (error) {
+    console.error('Fetch orders error:', error.response?.status, error.response?.data);
+  }
+}, []);
+
+  useEffect(() => {
+  fetchOrders();
+
+  const socket = io('http://127.0.0.1:3001');
+
+  socket.on('new_order', (data) => {
+  console.log('Socket new_order received in React:', data);
+  fetchOrders();
+});
+
+  socket.on('order_ready', () => {
+    fetchOrders();
+  });
+
+  socket.on('order_delivered', () => {
+    fetchOrders();
+  });
+
+  return () => {
+    socket.disconnect();
+  };
+}, [fetchOrders]);
+
+  const updateOrderStatus = useCallback(async (orderId, newStatus) => {
+    const realId = typeof orderId === 'string'
+      ? Number(orderId.replace('ORD-', ''))
+      : orderId;
+
+    await api.patch(`/orders/${realId}/status`, {
+      status: newStatus,
+    });
+
+    await fetchOrders();
+  }, [fetchOrders]);
 
   const getOrdersByStatus = useCallback(
     (status) => orders.filter((o) => o.status === status),
@@ -49,6 +104,7 @@ export function OrdersProvider({ children }) {
     <OrdersContext.Provider
       value={{
         orders,
+        fetchOrders,
         updateOrderStatus,
         getOrdersByStatus,
         getActiveOrders,

@@ -11,7 +11,7 @@ class PublicMenuController extends Controller
     public function show(Table $table)
     {
         $products = Product::with('category')
-            ->where('status', 'active')
+            ->where('status', 'available')
             ->where('stock_quantity', '>', 0)
             ->get();
 

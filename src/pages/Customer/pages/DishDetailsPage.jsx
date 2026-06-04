@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { X, Minus, Plus, ShoppingBag } from 'lucide-react';
 import { useStore } from '../store/useStore';
-import { MOCK_MENU } from './MenuPage';
 
-export default function DishDetailsPage({ dishId, onClose }) {
+export default function DishDetailsPage({ dish, onClose }) {
     const addToCart = useStore(state => state.addToCart);
-    const dish = MOCK_MENU.find(d => d.id === dishId);
 
     // Fallback if dish not found
     if (!dish) return null;

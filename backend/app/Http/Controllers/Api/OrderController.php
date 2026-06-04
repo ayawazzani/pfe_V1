@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class OrderController extends Controller
 {
@@ -20,12 +21,12 @@ class OrderController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
         ]);
 
-        return DB::transaction(function () use ($request) {
+        $order = DB::transaction(function () use ($request) {
             $total = 0;
 
             $order = Order::create([
                 'table_id' => $request->table_id,
-                'total' => $total,
+                'total' => 0,
                 'status' => 'new',
             ]);
 
@@ -50,11 +51,26 @@ class OrderController extends Controller
                 'total' => $total,
             ]);
 
-            return response()->json([
-                'message' => 'Order created successfully',
-                'order' => $order->load('items.product', 'table'),
-            ], 201);
+            $order->refresh();
+
+            return $order;
         });
+
+        Http::post('http://127.0.0.1:3001/emit', [
+            'event' => 'new_order',
+            'data' => [
+                'order_id' => $order->id,
+                'table_id' => $order->table_id,
+                'total' => $order->total,
+                'status' => $order->status,
+            ],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Order created successfully',
+            'data' => $order->load('items.product', 'table'),
+        ], 201);
     }
 
     public function index()
@@ -63,22 +79,43 @@ class OrderController extends Controller
             ->latest()
             ->get();
 
-        return response()->json($orders);
+        return response()->json([
+            'success' => true,
+            'message' => 'Orders fetched successfully',
+            'data' => $orders,
+        ]);
     }
 
     public function updateStatus(Request $request, Order $order)
-{
-    $request->validate([
-        'status' => 'required|in:new,accepted,preparing,ready,delivered,paid,closed,cancelled',
-    ]);
+    {
+        $request->validate([
+            'status' => 'required|in:new,accepted,preparing,ready,delivered,paid,closed,cancelled',
+        ]);
 
-    $order->update([
-        'status' => $request->status,
-    ]);
+        $order->update([
+            'status' => $request->status,
+        ]);
 
-    return response()->json([
-        'message' => 'Order status updated successfully',
-        'order' => $order->load('items.product', 'table'),
-    ]);
-}
+        $event = match ($order->status) {
+            'ready' => 'order_ready',
+            'delivered' => 'order_delivered',
+            default => null,
+        };
+
+        if ($event) {
+            Http::post('http://127.0.0.1:3001/emit', [
+                'event' => $event,
+                'data' => [
+                    'order_id' => $order->id,
+                    'status' => $order->status,
+                ],
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Order status updated successfully',
+            'data' => $order->load('items.product', 'table'),
+        ]);
+    }
 }

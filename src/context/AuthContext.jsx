@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react';
-import { users } from '../data/mockData';
+import api from '../api';
 
 const AuthContext = createContext(null);
 
@@ -9,22 +9,37 @@ export function AuthProvider({ children }) {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const login = useCallback((email, password) => {
-    const found = users.find(
-      (u) => u.email === email && u.password === password
-    );
-    if (found) {
-      const userData = { id: found.id, name: found.name, email: found.email, role: found.role };
-      setUser(userData);
+  const login = useCallback(async (email, password) => {
+    try {
+      const response = await api.post('/login', {
+        email,
+        password,
+      });
+
+      const token = response.data.token;
+      const userData = response.data.user;
+
+      localStorage.setItem('token', token);
       localStorage.setItem('restoYH_user', JSON.stringify(userData));
-      return { success: true, role: found.role };
+
+      setUser(userData);
+
+      return {
+        success: true,
+        role: userData.role,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Invalid email or password',
+      };
     }
-    return { success: false, message: 'Invalid email or password' };
   }, []);
 
   const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem('restoYH_user');
+    localStorage.removeItem('token');
   }, []);
 
   return (

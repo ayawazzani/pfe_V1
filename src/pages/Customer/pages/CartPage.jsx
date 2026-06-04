@@ -1,17 +1,34 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Trash2, Minus, Plus, ChevronRight } from 'lucide-react';
 import { useStore } from '../store/useStore';
+import api from '../../../api';
+
 
 export default function CartPage() {
     const navigate = useNavigate();
     const { cart, updateCartQuantity, removeFromCart, placeOrder, order } = useStore();
+    const [searchParams] = useSearchParams();
+    const tableId = searchParams.get('table_id') || 1;
 
-    const handleConfirmOrder = () => {
-        placeOrder();
-        // After calling placeOrder, the store updates and generates an order if successful.
-        // However, to safely navigate, we could just navigate to /order/current 
-        // and let the tracker fetch the 'latest' order. Let's just go there.
-        navigate('/order/current');
+    const handleConfirmOrder = async () => {
+        try {
+            const payload = {
+                table_id: Number(tableId),
+                items: cart.map(item => ({
+                    product_id: item.id,
+                    quantity: item.quantity,
+                })),
+            };
+
+            const response = await api.post('/orders', payload);
+
+            placeOrder();
+
+            navigate(`/order/current?table_id=${tableId}&order_id=${response.data.data.id}`);
+        } catch (error) {
+            console.error(error);
+            alert('Failed to confirm order');
+        }
     };
 
     const subtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
@@ -31,7 +48,7 @@ export default function CartPage() {
                 </div>
                 <div className="table-badge">
                     <div className="dot"></div>
-                    <span>Table 5</span>
+                    <span>Table {tableId}</span>
                 </div>
             </div>
 
@@ -118,7 +135,7 @@ export default function CartPage() {
                             onClick={handleConfirmOrder}
                             className="checkout-btn"
                         >
-                            <div className="checkout-btn-left">Table 5 • {totalItems} items</div>
+                            <div className="checkout-btn-left">Table {tableId} • {totalItems} items</div>
                             <div className="checkout-btn-center">Confirm Order</div>
                             <ChevronRight size={20} color="#FFE6D1" />
                         </button>
