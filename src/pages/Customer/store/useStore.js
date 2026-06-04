@@ -40,25 +40,24 @@ export const useStore = create((set) => ({
     clearCart: () => set({ cart: [] }),
 
     // Order Actions
-    placeOrder: () => set((state) => {
-        if (state.cart.length === 0) return state;
-
+    placeOrder: (backendOrder) => set((state) => {
         const subtotal = state.cart.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
-        const total = subtotal + (subtotal * 0.08); // 8% tax
+        const total = subtotal + (subtotal * 0.08);
 
         const newOrder = {
-            id: generateOrderId(),
-            table: 5, // mock table
+            id: `ORD-${String(backendOrder.id).padStart(3, '0')}`,
+            realId: backendOrder.id,
+            table: backendOrder.table_id,
             items: [...state.cart],
             total: total,
             subtotal: subtotal,
-            status: 'placed',
+            status: backendOrder.status,
             timestamp: Date.now()
         };
 
         return {
             order: newOrder,
-            cart: [] // clear cart after placing order
+            cart: []
         };
     }),
 

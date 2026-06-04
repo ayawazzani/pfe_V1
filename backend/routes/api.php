@@ -76,7 +76,7 @@ Route::middleware('role:admin,kitchen,waiter')->group(function () {
     Route::get('/orders', [OrderController::class, 'index']);
 });
 
-Route::middleware('role:admin,kitchen')->group(function () {
+Route::middleware('role:admin,kitchen,waiter')->group(function () {
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus']);
     Route::put('/orders/{order}/status', [OrderController::class, 'updateStatus']);
 });

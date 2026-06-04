@@ -86,6 +86,9 @@ export default function MenuPage() {
     const [searchParams] = useSearchParams();
     const tableId = searchParams.get('table_id');
     useEffect(() => {
+        if (tableId) {
+            localStorage.setItem('table_id', tableId);
+        }
     const fetchMenu = async () => {
         try {
             setLoading(true);

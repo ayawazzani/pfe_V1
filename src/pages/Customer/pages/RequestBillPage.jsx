@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Check } from 'lucide-react';
 import { useStore } from '../store/useStore';
-
+import api from '../../../api';
 export default function RequestBillPage() {
     const navigate = useNavigate();
     const { order, clearOrder } = useStore();
@@ -21,10 +21,24 @@ export default function RequestBillPage() {
         );
     }
 
-    const handlePayNow = () => {
-        if (!paymentMethod) return;
+    const handlePayNow = async () => {
+    if (!paymentMethod || !order?.realId) return;
+
+    try {
+        await api.post('/payments', {
+            order_id: order.realId,
+            amount: order.total,
+            method: paymentMethod,
+            status: 'completed',
+            transaction_id: `TXN-${Date.now()}`
+        });
+
         setIsPaid(true);
-    };
+    } catch (error) {
+        console.error('Payment error:', error.response?.data || error);
+        alert('Payment failed');
+    }
+};
 
     const handleDone = () => {
         clearOrder();
@@ -44,7 +58,7 @@ export default function RequestBillPage() {
                     </div>
                     <div className="table-badge" style={{ backgroundColor: '#F0F2F5', border: 'none' }}>
                         <div className="dot" style={{ backgroundColor: 'var(--success)' }}></div>
-                        <span>Table 5</span>
+                        <span>Table {order.table}</span>
                     </div>
                 </div>
 

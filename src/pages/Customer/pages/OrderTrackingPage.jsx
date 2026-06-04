@@ -1,10 +1,12 @@
+
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle2, RotateCcw } from 'lucide-react';
+import { io } from 'socket.io-client';
 import { useStore } from '../store/useStore';
 
 const STATUS_STEPS = [
-    'placed',
+    'new',
     'accepted',
     'preparing',
     'ready',
@@ -12,28 +14,33 @@ const STATUS_STEPS = [
 ];
 
 const STATUS_LABELS = {
-    placed: 'Order Placed',
+    new: 'Order Placed',
     accepted: 'Accepted',
     preparing: 'Preparing',
     ready: 'Ready',
     delivered: 'Delivered'
 };
-
 export default function OrderTrackingPage() {
     const navigate = useNavigate();
     const { order, updateOrderStatus } = useStore();
-
     useEffect(() => {
-        if (!order) return;
-        const currentIdx = STATUS_STEPS.indexOf(order.status);
-        if (currentIdx < STATUS_STEPS.length - 1) {
-            const timer = setTimeout(() => {
-                updateOrderStatus(STATUS_STEPS[currentIdx + 1]);
-            }, 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [order, updateOrderStatus]);
+    if (!order?.realId) return;
 
+    const socket = io('http://127.0.0.1:3001');
+
+    socket.on('order_status_updated', (data) => {
+        console.log('Client received status:', data);
+
+        if (Number(data.order_id) === Number(order.realId)) {
+            updateOrderStatus(data.status);
+        }
+    });
+
+    return () => {
+        socket.disconnect();
+    };
+}, [order?.realId, updateOrderStatus]);
+    
     if (!order) {
         return (
             <div className="page-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '40px' }}>

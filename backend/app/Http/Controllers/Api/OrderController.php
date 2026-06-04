@@ -19,6 +19,7 @@ class OrderController extends Controller
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
+            'items.*.special_instructions' => 'nullable|string|max:1000',
         ]);
 
         $order = DB::transaction(function () use ($request) {
@@ -42,6 +43,7 @@ class OrderController extends Controller
                     'quantity' => $quantity,
                     'price' => $price,
                     'subtotal' => $subtotal,
+                    'special_instructions' => $item['special_instructions'] ?? null,
                 ]);
 
                 $total += $subtotal;
@@ -70,6 +72,7 @@ class OrderController extends Controller
             'success' => true,
             'message' => 'Order created successfully',
             'data' => $order->load('items.product', 'table'),
+            
         ], 201);
     }
 
@@ -96,11 +99,16 @@ class OrderController extends Controller
             'status' => $request->status,
         ]);
 
-        $event = match ($order->status) {
-            'ready' => 'order_ready',
-            'delivered' => 'order_delivered',
-            default => null,
-        };
+        $event = 'order_status_updated';
+
+        Http::post('http://127.0.0.1:3001/emit', [
+            'event' => $event,
+            'data' => [
+                'order_id' => $order->id,
+                'status' => $order->status,
+                'table_id' => $order->table_id,
+            ],
+        ]);
 
         if ($event) {
             Http::post('http://127.0.0.1:3001/emit', [

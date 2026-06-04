@@ -14,6 +14,7 @@ class OrderItem extends Model
         'price',
         'subtotal',
         'note',
+        'special_instructions',
     ];
 
     /**

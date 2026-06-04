@@ -8,21 +8,30 @@ export default function CartPage() {
     const navigate = useNavigate();
     const { cart, updateCartQuantity, removeFromCart, placeOrder, order } = useStore();
     const [searchParams] = useSearchParams();
-    const tableId = searchParams.get('table_id') || 1;
+    const tableId =
+    searchParams.get('table_id') ||
+    localStorage.getItem('table_id');
 
     const handleConfirmOrder = async () => {
+        if (!tableId) {
+            alert('Table not found');
+            navigate('/menu?table_id=1');
+            return;
+        }
         try {
             const payload = {
                 table_id: Number(tableId),
                 items: cart.map(item => ({
                     product_id: item.id,
                     quantity: item.quantity,
+                    special_instructions: item.specialInstructions || null,
                 })),
             };
+            console.log('ORDER PAYLOAD:', payload);
 
             const response = await api.post('/orders', payload);
 
-            placeOrder();
+            placeOrder(response.data.data);
 
             navigate(`/order/current?table_id=${tableId}&order_id=${response.data.data.id}`);
         } catch (error) {
@@ -58,7 +67,7 @@ export default function CartPage() {
                 <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-gray)' }}>
                     <p>Your cart is empty.</p>
                     <button
-                        onClick={() => navigate('/menu')}
+                        onClick={() => navigate(`/menu?table_id=${tableId}`)}
                         style={{ marginTop: '16px', color: 'var(--primary-color)', fontWeight: '600', fontSize: '16px' }}
                     >
                         Browse Menu

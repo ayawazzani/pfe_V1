@@ -133,7 +133,7 @@ export default function WaiterDashboard() {
                   </div>
                   <button
                     className="deliver-btn"
-                    onClick={() => handleDeliver(order.id)}
+                    onClick={() => handleDeliver(order.realId)}
                     id={`deliver-${order.id}`}
                   >
                     <CheckCircle size={16} />
