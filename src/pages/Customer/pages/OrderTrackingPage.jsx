@@ -2,8 +2,9 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle2, RotateCcw } from 'lucide-react';
-import { io } from 'socket.io-client';
+
 import { useStore } from '../store/useStore';
+import api from '../../../api';
 
 const STATUS_STEPS = [
     'new',
@@ -25,6 +26,30 @@ export default function OrderTrackingPage() {
     const { order, updateOrderStatus } = useStore();
     useEffect(() => {
     if (!order?.realId) return;
+
+    const fetchCurrentOrder = async () => {
+        try {
+            const response = await api.get('/orders');
+
+            const orders = response.data.data || [];
+
+            const currentOrder = orders.find(
+                (o) => Number(o.id) === Number(order.realId)
+            );
+
+            if (currentOrder) {
+                updateOrderStatus(currentOrder.status);
+            }
+        } catch (error) {
+            console.error('Fetch current order error:', error);
+        }
+    };
+
+    fetchCurrentOrder();
+
+    const interval = setInterval(fetchCurrentOrder, 3000);
+
+    return () => clearInterval(interval);
 }, [order?.realId, updateOrderStatus]);
     
     if (!order) {
