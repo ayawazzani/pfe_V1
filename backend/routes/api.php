@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\DashboardController;
 
+Route::get('/public/orders/{order}', [OrderController::class, 'showPublic']);
+
 // =========================
 // PUBLIC ROUTES
 // =========================

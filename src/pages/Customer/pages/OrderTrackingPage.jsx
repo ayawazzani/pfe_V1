@@ -29,17 +29,13 @@ export default function OrderTrackingPage() {
 
     const fetchCurrentOrder = async () => {
         try {
-            const response = await api.get('/orders');
+            const response = await api.get(`/public/orders/${order.realId}`);
 
-            const orders = response.data.data || [];
+            const currentOrder = response.data.data;
 
-            const currentOrder = orders.find(
-                (o) => Number(o.id) === Number(order.realId)
-            );
-
-            if (currentOrder) {
-                updateOrderStatus(currentOrder.status);
-            }
+if (currentOrder) {
+    updateOrderStatus(currentOrder.status);
+}
         } catch (error) {
             console.error('Fetch current order error:', error);
         }

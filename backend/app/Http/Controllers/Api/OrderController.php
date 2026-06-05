@@ -122,5 +122,13 @@ class OrderController extends Controller
         'message' => 'Order status updated successfully',
         'data' => $order->load('items.product', 'table'),
     ]);
+    
+}
+public function showPublic(Order $order)
+{
+    return response()->json([
+        'success' => true,
+        'data' => $order->load('items.product', 'table'),
+    ]);
 }
 }
