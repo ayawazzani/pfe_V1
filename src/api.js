@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an Axios instance pointing to the Laravel API
 const api = axios.create({
-    baseURL: 'http://ecomv1.alwaysdata.net/api',
+    baseURL: 'https://ecomv1.alwaysdata.net/api',
     withCredentials: false,
     headers: {
         Accept: 'application/json',
