@@ -43,26 +43,12 @@ export function OrdersProvider({ children }) {
   useEffect(() => {
   fetchOrders();
 
-  const socket = io('http://127.0.0.1:3001');
-
-  socket.on('new_order', (data) => {
-  console.log('Socket new_order received in React:', data);
-  fetchOrders();
-});
-
-  socket.on('order_ready', () => {
+  const interval = setInterval(() => {
     fetchOrders();
-  });
-  socket.onAny((event, data) => {
-    console.log('SOCKET EVENT:', event, data);
-  });
-
-  socket.on('order_delivered', () => {
-    fetchOrders();
-  });
+  }, 3000);
 
   return () => {
-    socket.disconnect();
+    clearInterval(interval);
   };
 }, [fetchOrders]);
 

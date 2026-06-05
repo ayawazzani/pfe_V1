@@ -25,20 +25,6 @@ export default function OrderTrackingPage() {
     const { order, updateOrderStatus } = useStore();
     useEffect(() => {
     if (!order?.realId) return;
-
-    const socket = io('http://127.0.0.1:3001');
-
-    socket.on('order_status_updated', (data) => {
-        console.log('Client received status:', data);
-
-        if (Number(data.order_id) === Number(order.realId)) {
-            updateOrderStatus(data.status);
-        }
-    });
-
-    return () => {
-        socket.disconnect();
-    };
 }, [order?.realId, updateOrderStatus]);
     
     if (!order) {

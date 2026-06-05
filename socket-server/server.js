@@ -24,6 +24,10 @@ io.on("connection", (socket) => {
   });
 });
 
+app.get("/", (req, res) => {
+  res.send("Socket server is running");
+});
+
 // Laravel ghadi y3ayet hna
 app.post("/emit", (req, res) => {
   console.log("Laravel event received:", req.body);
@@ -40,6 +44,8 @@ app.post("/emit", (req, res) => {
   });
 });
 
-server.listen(3001, () => {
-  console.log("Socket.IO server running on port 3001");
+const PORT = process.env.PORT || 8300;
+
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Socket.IO server running on port ${PORT}`);
 });

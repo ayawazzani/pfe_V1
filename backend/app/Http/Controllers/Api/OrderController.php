@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+use Illuminate\Support\Facades\Log;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
@@ -58,15 +59,19 @@ class OrderController extends Controller
             return $order;
         });
 
-        Http::post('http://127.0.0.1:3001/emit', [
-            'event' => 'new_order',
-            'data' => [
-                'order_id' => $order->id,
-                'table_id' => $order->table_id,
-                'total' => $order->total,
-                'status' => $order->status,
-            ],
-        ]);
+        try {
+            Http::timeout(2)->post(env('SOCKET_SERVER_URL') . '/emit', [
+                'event' => 'new_order',
+                'data' => [
+                    'order_id' => $order->id,
+                    'table_id' => $order->table_id,
+                    'total' => $order->total,
+                    'status' => $order->status,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::warning('Socket emit failed: ' . $e->getMessage());
+        }
 
         return response()->json([
             'success' => true,
@@ -90,40 +95,32 @@ class OrderController extends Controller
     }
 
     public function updateStatus(Request $request, Order $order)
-    {
-        $request->validate([
-            'status' => 'required|in:new,accepted,preparing,ready,delivered,paid,closed,cancelled',
-        ]);
+{
+    $request->validate([
+        'status' => 'required|in:new,accepted,preparing,ready,delivered,paid,closed,cancelled',
+    ]);
 
-        $order->update([
-            'status' => $request->status,
-        ]);
+    $order->update([
+        'status' => $request->status,
+    ]);
 
-        $event = 'order_status_updated';
-
-        Http::post('http://127.0.0.1:3001/emit', [
-            'event' => $event,
+    try {
+        Http::timeout(2)->post(env('SOCKET_SERVER_URL') . '/emit', [
+            'event' => 'order_status_updated',
             'data' => [
                 'order_id' => $order->id,
                 'status' => $order->status,
                 'table_id' => $order->table_id,
             ],
         ]);
-
-        if ($event) {
-            Http::post('http://127.0.0.1:3001/emit', [
-                'event' => $event,
-                'data' => [
-                    'order_id' => $order->id,
-                    'status' => $order->status,
-                ],
-            ]);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Order status updated successfully',
-            'data' => $order->load('items.product', 'table'),
-        ]);
+    } catch (\Exception $e) {
+        Log::warning('Socket emit failed: ' . $e->getMessage());
     }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Order status updated successfully',
+        'data' => $order->load('items.product', 'table'),
+    ]);
+}
 }

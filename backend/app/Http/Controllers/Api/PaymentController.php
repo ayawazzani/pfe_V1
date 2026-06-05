@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
@@ -30,14 +31,18 @@ class PaymentController extends Controller
                     'status' => 'paid',
                 ]);
 
-                Http::post('http://127.0.0.1:3001/emit', [
-                    'event' => 'order_status_updated',
-                    'data' => [
-                        'order_id' => $order->id,
-                        'status' => $order->status,
-                        'table_id' => $order->table_id,
-                    ],
-                ]);
+                try {
+                    Http::timeout(2)->post('http://127.0.0.1:3001/emit', [
+                        'event' => 'order_status_updated',
+                        'data' => [
+                            'order_id' => $order->id,
+                            'status' => $order->status,
+                            'table_id' => $order->table_id,
+                        ],
+                    ]);
+                } catch (\Exception $e) {
+                    Log::warning('Socket server unavailable: ' . $e->getMessage());
+                }
             }
         }
 
