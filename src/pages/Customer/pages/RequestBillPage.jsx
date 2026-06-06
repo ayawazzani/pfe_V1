@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Check } from 'lucide-react';
 import { useStore } from '../store/useStore';
@@ -45,6 +45,16 @@ export default function RequestBillPage() {
         clearOrder();
         window.location.href = 'about:blank'; // or redirect somewhere
     };
+
+    useEffect(() => {
+        let timeout;
+        if (isPaid) {
+            timeout = setTimeout(() => {
+                handleLeaveSite();
+            }, 120000); // 2 minutes
+        }
+        return () => clearTimeout(timeout);
+    }, [isPaid]);
 
     if (isPaid) {
         return (
@@ -95,7 +105,7 @@ export default function RequestBillPage() {
                         onClick={handleLeaveSite}
                         style={{ justifyContent: 'center', backgroundColor: '#dc2626' }}
                     >
-                        Leave Site
+                        DONE
                     </button>
                     <p className="success-footer">Thank you for dining at Bistro 360!</p>
                 </div>

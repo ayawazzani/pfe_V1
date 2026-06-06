@@ -49,6 +49,12 @@ export default function KitchenDisplay() {
   const readyOrders = orders.filter((o) => o.status === 'ready');
   const completedOrders = orders.filter((o) => ['delivered', 'paid'].includes(o.status));
 
+  const handleClearColumn = (columnOrders) => {
+    columnOrders.forEach(order => {
+      updateOrderStatus(order.realId, 'cancelled');
+    });
+  };
+
   const activeCount = newOrders.length + acceptedOrders.length + preparingOrders.length + readyOrders.length;
 
   const tableColors = ['green', 'orange', 'blue', 'yellow'];
@@ -112,8 +118,13 @@ export default function KitchenDisplay() {
         {/* New Orders */}
         <div className="kitchen-column">
           <div className="column-header new-order">
-            New Order
-            <span className="col-count">{newOrders.length}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              New Order
+              <span className="col-count">{newOrders.length}</span>
+            </div>
+            {newOrders.length > 0 && (
+              <button onClick={() => handleClearColumn(newOrders)} style={{ fontSize: '11px', padding: '2px 6px', cursor: 'pointer', background: 'transparent', border: '1px solid currentColor', borderRadius: '4px', color: 'inherit', opacity: 0.8 }}>Clear All</button>
+            )}
           </div>
           <div className="column-cards">
             {newOrders.map((order, i) => (
@@ -138,8 +149,13 @@ export default function KitchenDisplay() {
         {/* Accepted */}
         <div className="kitchen-column">
           <div className="column-header accepted">
-            Accepted
-            <span className="col-count">{acceptedOrders.length}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Accepted
+              <span className="col-count">{acceptedOrders.length}</span>
+            </div>
+            {acceptedOrders.length > 0 && (
+              <button onClick={() => handleClearColumn(acceptedOrders)} style={{ fontSize: '11px', padding: '2px 6px', cursor: 'pointer', background: 'transparent', border: '1px solid currentColor', borderRadius: '4px', color: 'inherit', opacity: 0.8 }}>Clear All</button>
+            )}
           </div>
           <div className="column-cards">
             {acceptedOrders.map((order, i) => (
@@ -165,8 +181,13 @@ export default function KitchenDisplay() {
         {/* Preparing */}
         <div className="kitchen-column">
           <div className="column-header preparing">
-            Preparing
-            <span className="col-count">{preparingOrders.length}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Preparing
+              <span className="col-count">{preparingOrders.length}</span>
+            </div>
+            {preparingOrders.length > 0 && (
+              <button onClick={() => handleClearColumn(preparingOrders)} style={{ fontSize: '11px', padding: '2px 6px', cursor: 'pointer', background: 'transparent', border: '1px solid currentColor', borderRadius: '4px', color: 'inherit', opacity: 0.8 }}>Clear All</button>
+            )}
           </div>
           <div className="column-cards">
             {preparingOrders.map((order, i) => (
@@ -192,8 +213,13 @@ export default function KitchenDisplay() {
         {/* Ready */}
         <div className="kitchen-column">
           <div className="column-header ready">
-            Ready
-            <span className="col-count">{readyOrders.length}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Ready
+              <span className="col-count">{readyOrders.length}</span>
+            </div>
+            {readyOrders.length > 0 && (
+              <button onClick={() => handleClearColumn(readyOrders)} style={{ fontSize: '11px', padding: '2px 6px', cursor: 'pointer', background: 'transparent', border: '1px solid currentColor', borderRadius: '4px', color: 'inherit', opacity: 0.8 }}>Clear All</button>
+            )}
           </div>
           <div className="column-cards">
             {readyOrders.map((order, i) => (
@@ -211,11 +237,16 @@ export default function KitchenDisplay() {
         {/* Completed Today */}
         <div className="kitchen-column completed">
           <div className="column-header completed-header">
-            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Check size={14} />
-              Completed Today
-            </span>
-            <span className="col-count">{completedOrders.length}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Check size={14} />
+                Completed Today
+              </span>
+              <span className="col-count">{completedOrders.length}</span>
+            </div>
+            {completedOrders.length > 0 && (
+              <button onClick={() => handleClearColumn(completedOrders)} style={{ fontSize: '11px', padding: '2px 6px', cursor: 'pointer', background: 'transparent', border: '1px solid currentColor', borderRadius: '4px', color: 'inherit', opacity: 0.8 }}>Clear All</button>
+            )}
           </div>
           <div className="column-cards">
             {completedOrders.map((order) => (
