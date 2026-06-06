@@ -81,7 +81,7 @@ export default function RequestBillPage() {
                     </div>
                     <h1 className="success-title">Payment Successful!</h1>
                     <p className="success-subtitle">${order.total.toFixed(2)} paid via {paymentMethod === 'card' ? 'Card' : 'Cash'}</p>
-                    <p className="success-note">Receipt sent to your email</p>
+                    
                 </div>
 
                 <div className="success-order-card">
