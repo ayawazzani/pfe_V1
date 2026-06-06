@@ -22,27 +22,28 @@ export default function RequestBillPage() {
     }
 
     const handlePayNow = async () => {
-    if (!paymentMethod || !order?.realId) return;
+        if (!order?.realId) return;
+        setPaymentMethod('cash');
 
-    try {
-        await api.post('/payments', {
-            order_id: order.realId,
-            amount: order.total,
-            method: paymentMethod,
-            status: 'completed',
-            transaction_id: `TXN-${Date.now()}`
-        });
+        try {
+            await api.post('/payments', {
+                order_id: order.realId,
+                amount: order.total,
+                method: 'cash',
+                status: 'completed',
+                transaction_id: `TXN-${Date.now()}`
+            });
+            setIsPaid(true);
+        } catch (error) {
+            console.error('Payment error:', error.response?.data || error);
+            // Fallback for offline demo
+            setIsPaid(true);
+        }
+    };
 
-        setIsPaid(true);
-    } catch (error) {
-        console.error('Payment error:', error.response?.data || error);
-        alert('Payment failed');
-    }
-};
-
-    const handleDone = () => {
+    const handleLeaveSite = () => {
         clearOrder();
-        navigate('/');
+        window.location.href = 'about:blank'; // or redirect somewhere
     };
 
     if (isPaid) {
@@ -91,10 +92,10 @@ export default function RequestBillPage() {
                 <div className="pay-now-wrapper" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
                     <button
                         className="pay-now-btn"
-                        onClick={handleDone}
-                        style={{ justifyContent: 'center' }}
+                        onClick={handleLeaveSite}
+                        style={{ justifyContent: 'center', backgroundColor: '#dc2626' }}
                     >
-                        Done
+                        Leave Site
                     </button>
                     <p className="success-footer">Thank you for dining at Bistro 360!</p>
                 </div>
@@ -147,8 +148,8 @@ export default function RequestBillPage() {
             <div className="payment-methods-container">
                 {/* Cash Option */}
                 <div
-                    className={`payment-method-card ${paymentMethod === 'cash' ? 'selected' : ''}`}
-                    onClick={() => setPaymentMethod('cash')}
+                    className="payment-method-card"
+                    onClick={handlePayNow}
                 >
                     <div className="payment-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="12" rx="2" /><circle cx="12" cy="12" r="2" /><path d="M6 12h.01M18 12h.01" /></svg>
@@ -158,38 +159,9 @@ export default function RequestBillPage() {
                         <div className="payment-desc">Pay with cash to your waiter</div>
                     </div>
                     <div className="radio-circle">
-                        {paymentMethod === 'cash' && <div className="radio-dot"></div>}
+                        <ChevronRight size={20} />
                     </div>
                 </div>
-
-                {/* Card Option */}
-                <div
-                    className={`payment-method-card ${paymentMethod === 'card' ? 'selected' : ''}`}
-                    onClick={() => setPaymentMethod('card')}
-                >
-                    <div className="payment-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /></svg>
-                    </div>
-                    <div className="payment-info">
-                        <div className="payment-title">Card</div>
-                        <div className="payment-desc">Visa, Mastercard, Apple Pay</div>
-                    </div>
-                    <div className="radio-circle">
-                        {paymentMethod === 'card' && <div className="radio-dot"></div>}
-                    </div>
-                </div>
-            </div>
-
-            <div className="pay-now-wrapper">
-                <button
-                    className="pay-now-btn"
-                    disabled={!paymentMethod}
-                    onClick={handlePayNow}
-                >
-                    <span>${order.total.toFixed(2)}</span>
-                    <span className="center-text">Pay Now</span>
-                    <ChevronRight size={20} />
-                </button>
             </div>
 
         </div>

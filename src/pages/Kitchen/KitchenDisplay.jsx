@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useOrders } from '../../context/OrdersContext';
 import {
   Home, UtensilsCrossed, Clock, AlertTriangle, Check,
-  ArrowRight, Bell, LogOut, ChefHat,
+  ArrowRight, Bell, LogOut, ChefHat, X
 } from 'lucide-react';
 import './Kitchen.css';
 
@@ -121,6 +121,7 @@ export default function KitchenDisplay() {
                 key={order.id}
                 order={order}
                 tableColor={tableColors[i % tableColors.length]}
+                onCancel={() => updateOrderStatus(order.realId, 'cancelled')}
                 action={
                   <button
                     className="kitchen-action-btn accept"
@@ -147,6 +148,7 @@ export default function KitchenDisplay() {
                 order={order}
                 tableColor={tableColors[(i + 1) % tableColors.length]}
                 showUrgency
+                onCancel={() => updateOrderStatus(order.realId, 'cancelled')}
                 action={
                   <button
                     className="kitchen-action-btn start"
@@ -173,6 +175,7 @@ export default function KitchenDisplay() {
                 order={order}
                 tableColor={tableColors[(i + 2) % tableColors.length]}
                 showUrgency
+                onCancel={() => updateOrderStatus(order.realId, 'cancelled')}
                 action={
                   <button
                     className="kitchen-action-btn mark-ready"
@@ -199,6 +202,7 @@ export default function KitchenDisplay() {
                 order={order}
                 tableColor={tableColors[(i + 3) % tableColors.length]}
                 showUrgency
+                onCancel={() => updateOrderStatus(order.realId, 'cancelled')}
               />
             ))}
           </div>
@@ -257,7 +261,7 @@ export default function KitchenDisplay() {
   );
 }
 
-function KitchenCard({ order, tableColor, action, showUrgency }) {
+function KitchenCard({ order, tableColor, action, showUrgency, onCancel }) {
   const mins = minutesWaiting(order.createdAt);
   const urgency = showUrgency ? getUrgencyLevel(mins) : null;
 
@@ -272,10 +276,30 @@ function KitchenCard({ order, tableColor, action, showUrgency }) {
       <div className="kitchen-card-body">
         <div className="kitchen-card-top">
           <span className="kitchen-card-id">{order.id}</span>
-          <span className="kitchen-card-time">
-            <Clock size={12} />
-            {timeAgo(order.createdAt)}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span className="kitchen-card-time">
+              <Clock size={12} />
+              {timeAgo(order.createdAt)}
+            </span>
+            {onCancel && (
+              <button 
+                className="kitchen-cancel-btn" 
+                onClick={onCancel}
+                style={{ 
+                  background: 'none', 
+                  border: 'none', 
+                  color: '#ef4444', 
+                  cursor: 'pointer', 
+                  padding: '2px', 
+                  display: 'flex', 
+                  alignItems: 'center' 
+                }}
+                title="Cancel Order"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
         </div>
         <div className={`kitchen-card-table ${tableColor}`}>
           Table {order.tableNumber}
