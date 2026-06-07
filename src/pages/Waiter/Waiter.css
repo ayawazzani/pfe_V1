@@ -175,7 +175,7 @@
   border-radius: 50%;
 }
 
-.waiter-section-header.green::before { background: var(--green-500); }
+.waiter-section-header.green::before { background: var(--brand-orange); }
 .waiter-section-header.blue::before { background: var(--blue-500); }
 
 .waiter-section-header h3 {
@@ -185,7 +185,7 @@
 }
 
 .waiter-section-header .count {
-  background: var(--green-500);
+  background: var(--brand-orange);
   color: var(--gray-900);
   font-size: 0.688rem;
   font-weight: 700;
@@ -217,7 +217,7 @@
 }
 
 .ready-card-header {
-  background: linear-gradient(135deg, #14B8A6, #0D9488);
+  background: linear-gradient(135deg, #F97316, #EA580C);
   padding: 10px 16px;
   display: flex;
   align-items: center;
@@ -277,7 +277,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--green-500);
+  background: var(--brand-orange);
 }
 
 .ready-card-items {
@@ -306,7 +306,7 @@
 .deliver-btn {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(135deg, #14B8A6, #0D9488);
+  background: linear-gradient(135deg, #F97316, #EA580C);
   color: var(--gray-900);
   border-radius: var(--radius-md);
   font-weight: 600;
@@ -316,12 +316,12 @@
   justify-content: center;
   gap: 8px;
   transition: all var(--transition-fast);
-  box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
 }
 
 .deliver-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(20, 184, 166, 0.4);
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);
 }
 
 /* ===== ALL ACTIVE ORDERS TABLE ===== */

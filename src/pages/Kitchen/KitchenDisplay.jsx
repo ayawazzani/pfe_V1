@@ -21,10 +21,20 @@ function minutesWaiting(dateStr) {
 }
 
 function getUrgencyLevel(mins) {
-  if (mins >= 40) return { label: `Urgent — ${mins} min`, className: 'red' };
-  if (mins >= 25) return { label: `Urgent — ${mins} min`, className: 'orange' };
-  if (mins >= 15) return { label: `Urgent — ${mins} min`, className: 'yellow' };
+  if (mins >= 40) return { label: `${mins}m — critical`, className: 'red' };
+  if (mins >= 25) return { label: `${mins}m — urgent`, className: 'orange' };
+  if (mins >= 15) return { label: `${mins}m — watch`, className: 'yellow' };
   return null;
+}
+
+function progressPct(mins) {
+  return Math.min(Math.round((mins / 30) * 100), 100);
+}
+
+function progressColor(pct) {
+  if (pct >= 80) return '#DC2626';
+  if (pct >= 50) return '#F97316';
+  return '#16A34A';
 }
 
 export default function KitchenDisplay() {
@@ -57,176 +67,180 @@ export default function KitchenDisplay() {
 
   const activeCount = newOrders.length + acceptedOrders.length + preparingOrders.length + readyOrders.length;
 
-  const tableColors = ['green', 'orange', 'blue', 'yellow'];
+  const criticalOrders = orders.filter(o =>
+    minutesWaiting(o.createdAt) >= 40 && ['accepted', 'preparing'].includes(o.status)
+  );
 
-  const formatTime = (date) => {
-    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-  };
+  const formatTime = (date) =>
+    date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 
-  const formatDate = (date) => {
-    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-  };
+  const formatDate = (date) =>
+    date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
   return (
-    <div className="kitchen-layout">
+    <div className="kd-layout">
+
       {/* Header */}
-      <header className="kitchen-header">
-        <div className="kitchen-header-left">
-          <div className="kitchen-home-btn" onClick={() => navigate('/login')}>
-            <Home size={18} />
-          </div>
-          <div className="kitchen-brand">
-            <div className="kitchen-brand-icon">
-              <ChefHat />
+      <header className="kd-header">
+        <div className="kd-header-left">
+          <button className="kd-home-btn" onClick={() => navigate('/login')} aria-label="Home">
+            <Home size={16} />
+          </button>
+          <div className="kd-brand">
+            <div className="kd-brand-icon">
+              <ChefHat size={18} />
             </div>
-            <div className="kitchen-brand-info">
-              <h2>Kitchen Display</h2>
-              <span>Resto YH</span>
+            <div>
+              <div className="kd-brand-name">Kitchen Display</div>
+              <div className="kd-brand-sub">Resto YH</div>
             </div>
           </div>
         </div>
 
-        <div className="kitchen-header-right">
-          <div className="kitchen-clock">
-            <div className="time">{formatTime(currentTime)}</div>
-            <div className="date">{formatDate(currentTime)}</div>
+        <div className="kd-header-pills">
+          <div className="kd-pill kd-pill-active">
+            <span className="kd-pill-num">{activeCount}</span> active
           </div>
-
-          <div className="kitchen-header-stats">
-            <div className="kitchen-header-stat active">
-              <span className="stat-num">{activeCount}</span>
-              Active
-            </div>
-            <div className="kitchen-header-stat prep">
-              <span className="stat-num">16m</span>
-              Avg Prep
-            </div>
-            <div className="kitchen-header-stat online">
-              Kitchen Online
-            </div>
+          <div className="kd-pill kd-pill-prep">16m avg prep</div>
+          <div className="kd-pill kd-pill-online">
+            <span className="kd-pulse-dot" /> kitchen online
           </div>
+        </div>
 
-          <button className="kitchen-logout-btn" onClick={handleLogout}>
-            <LogOut size={16} />
-            Logout
+        <div className="kd-header-right">
+          <div className="kd-clock">
+            <div className="kd-clock-time">{formatTime(currentTime)}</div>
+            <div className="kd-clock-date">{formatDate(currentTime)}</div>
+          </div>
+          <button className="kd-logout-btn" onClick={handleLogout}>
+            <LogOut size={14} /> Logout
           </button>
         </div>
       </header>
 
-      {/* Kanban Board */}
-      <div className="kitchen-board">
-        {/* New Orders */}
-        <div className="kitchen-column">
-          <div className="column-header new-order">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              New Order
-              <span className="col-count">{newOrders.length}</span>
+      {/* Alert banner */}
+      {criticalOrders.length > 0 && (
+        <div className="kd-alert">
+          <AlertTriangle size={14} />
+          {criticalOrders.length} order{criticalOrders.length > 1 ? 's' : ''} waiting 40+ min — immediate attention needed
+        </div>
+      )}
+
+      {/* Board */}
+      <div className="kd-board">
+
+        {/* New */}
+        <div className="kd-col">
+          <div className="kd-col-header">
+            <div className="kd-col-header-left">
+              <span className="kd-col-dot" style={{ background: '#F97316' }} />
+              New orders
+              <span className="kd-col-count">{newOrders.length}</span>
             </div>
             {newOrders.length > 0 && (
-              <button onClick={() => handleClearColumn(newOrders)} style={{ fontSize: '11px', padding: '2px 6px', cursor: 'pointer', background: 'transparent', border: '1px solid currentColor', borderRadius: '4px', color: 'inherit', opacity: 0.8 }}>Clear All</button>
+              <button className="kd-clear-btn" style={{ color: '#F97316' }} onClick={() => handleClearColumn(newOrders)}>Clear</button>
             )}
           </div>
-          <div className="column-cards">
+          <div className="kd-col-cards">
+            {newOrders.length === 0 && <div className="kd-empty"><UtensilsCrossed size={20} /><span>No new orders</span></div>}
             {newOrders.map((order, i) => (
-              <KitchenCard
+              <TicketCard
                 key={order.id}
                 order={order}
-                tableColor={tableColors[i % tableColors.length]}
-                onCancel={() => updateOrderStatus(order.realId, 'cancelled')}
+                colorIndex={i}
+                showUrgency={false}
                 action={
-                  <button
-                    className="kitchen-action-btn accept"
-                    onClick={() => updateOrderStatus(order.realId, 'accepted')}
-                  >
-                    Accept <ArrowRight size={16} />
+                  <button className="kd-bump kd-bump-accept" onClick={() => updateOrderStatus(order.realId, 'accepted')}>
+                    Bump — accept <ArrowRight size={13} />
                   </button>
                 }
+                onCancel={() => updateOrderStatus(order.realId, 'cancelled')}
               />
             ))}
           </div>
         </div>
 
         {/* Accepted */}
-        <div className="kitchen-column">
-          <div className="column-header accepted">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="kd-col">
+          <div className="kd-col-header">
+            <div className="kd-col-header-left">
+              <span className="kd-col-dot" style={{ background: '#CA8A04' }} />
               Accepted
-              <span className="col-count">{acceptedOrders.length}</span>
+              <span className="kd-col-count">{acceptedOrders.length}</span>
             </div>
             {acceptedOrders.length > 0 && (
-              <button onClick={() => handleClearColumn(acceptedOrders)} style={{ fontSize: '11px', padding: '2px 6px', cursor: 'pointer', background: 'transparent', border: '1px solid currentColor', borderRadius: '4px', color: 'inherit', opacity: 0.8 }}>Clear All</button>
+              <button className="kd-clear-btn" style={{ color: '#CA8A04' }} onClick={() => handleClearColumn(acceptedOrders)}>Clear</button>
             )}
           </div>
-          <div className="column-cards">
+          <div className="kd-col-cards">
+            {acceptedOrders.length === 0 && <div className="kd-empty"><Clock size={20} /><span>Nothing accepted</span></div>}
             {acceptedOrders.map((order, i) => (
-              <KitchenCard
+              <TicketCard
                 key={order.id}
                 order={order}
-                tableColor={tableColors[(i + 1) % tableColors.length]}
+                colorIndex={i + 1}
                 showUrgency
-                onCancel={() => updateOrderStatus(order.realId, 'cancelled')}
                 action={
-                  <button
-                    className="kitchen-action-btn start"
-                    onClick={() => updateOrderStatus(order.realId, 'preparing')}
-                  >
-                    Start Prep <ArrowRight size={16} />
+                  <button className="kd-bump kd-bump-start" onClick={() => updateOrderStatus(order.realId, 'preparing')}>
+                    Bump — prep <ArrowRight size={13} />
                   </button>
                 }
+                onCancel={() => updateOrderStatus(order.realId, 'cancelled')}
               />
             ))}
           </div>
         </div>
 
         {/* Preparing */}
-        <div className="kitchen-column">
-          <div className="column-header preparing">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="kd-col">
+          <div className="kd-col-header">
+            <div className="kd-col-header-left">
+              <span className="kd-col-dot" style={{ background: '#2563EB' }} />
               Preparing
-              <span className="col-count">{preparingOrders.length}</span>
+              <span className="kd-col-count">{preparingOrders.length}</span>
             </div>
             {preparingOrders.length > 0 && (
-              <button onClick={() => handleClearColumn(preparingOrders)} style={{ fontSize: '11px', padding: '2px 6px', cursor: 'pointer', background: 'transparent', border: '1px solid currentColor', borderRadius: '4px', color: 'inherit', opacity: 0.8 }}>Clear All</button>
+              <button className="kd-clear-btn" style={{ color: '#2563EB' }} onClick={() => handleClearColumn(preparingOrders)}>Clear</button>
             )}
           </div>
-          <div className="column-cards">
+          <div className="kd-col-cards">
+            {preparingOrders.length === 0 && <div className="kd-empty"><ChefHat size={20} /><span>Nothing cooking</span></div>}
             {preparingOrders.map((order, i) => (
-              <KitchenCard
+              <TicketCard
                 key={order.id}
                 order={order}
-                tableColor={tableColors[(i + 2) % tableColors.length]}
+                colorIndex={i + 2}
                 showUrgency
-                onCancel={() => updateOrderStatus(order.realId, 'cancelled')}
                 action={
-                  <button
-                    className="kitchen-action-btn mark-ready"
-                    onClick={() => updateOrderStatus(order.realId, 'ready')}
-                  >
-                    Mark Ready <ArrowRight size={16} />
+                  <button className="kd-bump kd-bump-ready" onClick={() => updateOrderStatus(order.realId, 'ready')}>
+                    Bump — ready <ArrowRight size={13} />
                   </button>
                 }
+                onCancel={() => updateOrderStatus(order.realId, 'cancelled')}
               />
             ))}
           </div>
         </div>
 
         {/* Ready */}
-        <div className="kitchen-column">
-          <div className="column-header ready">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="kd-col">
+          <div className="kd-col-header">
+            <div className="kd-col-header-left">
+              <span className="kd-col-dot" style={{ background: '#16A34A' }} />
               Ready
-              <span className="col-count">{readyOrders.length}</span>
+              <span className="kd-col-count">{readyOrders.length}</span>
             </div>
             {readyOrders.length > 0 && (
-              <button onClick={() => handleClearColumn(readyOrders)} style={{ fontSize: '11px', padding: '2px 6px', cursor: 'pointer', background: 'transparent', border: '1px solid currentColor', borderRadius: '4px', color: 'inherit', opacity: 0.8 }}>Clear All</button>
+              <button className="kd-clear-btn" style={{ color: '#16A34A' }} onClick={() => handleClearColumn(readyOrders)}>Clear</button>
             )}
           </div>
-          <div className="column-cards">
+          <div className="kd-col-cards">
+            {readyOrders.length === 0 && <div className="kd-empty"><Bell size={20} /><span>Nothing ready yet</span></div>}
             {readyOrders.map((order, i) => (
-              <KitchenCard
+              <TicketCard
                 key={order.id}
                 order={order}
-                tableColor={tableColors[(i + 3) % tableColors.length]}
+                colorIndex={i + 3}
                 showUrgency
                 onCancel={() => updateOrderStatus(order.realId, 'cancelled')}
               />
@@ -234,27 +248,30 @@ export default function KitchenDisplay() {
           </div>
         </div>
 
-        {/* Completed Today */}
-        <div className="kitchen-column completed">
-          <div className="column-header completed-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Check size={14} />
-                Completed Today
-              </span>
-              <span className="col-count">{completedOrders.length}</span>
+      </div>
+
+      {/* Done Today — full-width centered section */}
+      <div className="kd-done-section">
+        <div className="kd-done-inner">
+          <div className="kd-done-header">
+            <div className="kd-done-header-left">
+              <Check size={14} />
+              Done today
+              <span className="kd-col-count">{completedOrders.length}</span>
             </div>
             {completedOrders.length > 0 && (
-              <button onClick={() => handleClearColumn(completedOrders)} style={{ fontSize: '11px', padding: '2px 6px', cursor: 'pointer', background: 'transparent', border: '1px solid currentColor', borderRadius: '4px', color: 'inherit', opacity: 0.8 }}>Clear All</button>
+              <button className="kd-clear-btn" style={{ color: '#6B7280' }} onClick={() => handleClearColumn(completedOrders)}>Clear all</button>
             )}
           </div>
-          <div className="column-cards">
+          {completedOrders.length === 0 && (
+            <div className="kd-done-empty">No completed orders yet</div>
+          )}
+          <div className="kd-done-grid">
             {completedOrders.map((order) => (
-              <div className="completed-item" key={order.id}>
-                <span className="completed-item-info">
-                  {order.id} · Table {order.tableNumber}
-                </span>
-                <span className={`completed-item-status ${order.status}`}>
+              <div className="kd-done-item" key={order.id}>
+                <span className="kd-done-id">{order.id}</span>
+                <span className="kd-done-table">Table {order.tableNumber}</span>
+                <span className={`kd-done-badge kd-done-badge-${order.status}`}>
                   {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                 </span>
               </div>
@@ -264,98 +281,100 @@ export default function KitchenDisplay() {
       </div>
 
       {/* Footer */}
-      <footer className="kitchen-footer">
-        <div className="kitchen-footer-left">
-          <div className="kitchen-footer-stat">
-            <span className="dot blue" />
-            <span className="num">{newOrders.length}</span> New
-          </div>
-          <div className="kitchen-footer-stat">
-            <span className="dot orange" />
-            <span className="num">{preparingOrders.length}</span> Preparing
-          </div>
-          <div className="kitchen-footer-stat">
-            <span className="dot green" />
-            <span className="num">{readyOrders.length}</span> Ready
-          </div>
-          <div className="kitchen-footer-stat">
-            <span className="dot gray" />
-            <span className="num">7</span> Today's Covers
-          </div>
+      <footer className="kd-footer">
+        <div className="kd-footer-stats">
+          <div className="kd-fstat"><span className="kd-fdot" style={{ background: '#F97316' }} /><b>{newOrders.length}</b> new</div>
+          <div className="kd-fstat"><span className="kd-fdot" style={{ background: '#2563EB' }} /><b>{preparingOrders.length}</b> preparing</div>
+          <div className="kd-fstat"><span className="kd-fdot" style={{ background: '#16A34A' }} /><b>{readyOrders.length}</b> ready</div>
+          <div className="kd-fstat"><span className="kd-fdot" style={{ background: '#9CA3AF' }} /><b>{completedOrders.length}</b> done</div>
         </div>
-        <div className="kitchen-footer-right">
-          <Bell size={14} />
-          Notifications on
+        <div className="kd-footer-right">
+          <Bell size={13} /> Notifications on
         </div>
       </footer>
+
     </div>
   );
 }
 
-function KitchenCard({ order, tableColor, action, showUrgency, onCancel }) {
+const TABLE_COLORS = ['#F97316', '#2563EB', '#16A34A', '#CA8A04'];
+
+function TicketCard({ order, colorIndex, action, showUrgency, onCancel }) {
   const mins = minutesWaiting(order.createdAt);
   const urgency = showUrgency ? getUrgencyLevel(mins) : null;
+  const pct = progressPct(mins);
 
   return (
-    <div className="kitchen-card">
+    <div className="kd-ticket">
+
       {urgency && (
-        <div className={`kitchen-card-urgent ${urgency.className}`}>
-          <AlertTriangle size={12} />
+        <div className={`kd-ticket-urg kd-urg-${urgency.className}`}>
+          <AlertTriangle size={11} />
           {urgency.label}
         </div>
       )}
-      <div className="kitchen-card-body">
-        <div className="kitchen-card-top">
-          <span className="kitchen-card-id">{order.id}</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="kitchen-card-time">
-              <Clock size={12} />
-              {timeAgo(order.createdAt)}
-            </span>
-            {onCancel && (
-              <button 
-                className="kitchen-cancel-btn" 
-                onClick={onCancel}
-                style={{ 
-                  background: 'none', 
-                  border: 'none', 
-                  color: '#ef4444', 
-                  cursor: 'pointer', 
-                  padding: '2px', 
-                  display: 'flex', 
-                  alignItems: 'center' 
-                }}
-                title="Cancel Order"
-              >
-                <X size={16} />
-              </button>
-            )}
-          </div>
-        </div>
-        <div className={`kitchen-card-table ${tableColor}`}>
-          Table {order.tableNumber}
-        </div>
-        <div className="kitchen-card-items">
-          {order.items.map((item, i) => (
-            <div className="kitchen-item" key={i}>
-              <span className="kitchen-item-qty">{item.quantity}×</span>
-              <div className="kitchen-item-details">
-                <div className="kitchen-item-name">{item.name}</div>
-                {item.options?.map((opt, j) => (
-                  <div key={j} className="kitchen-item-option">{opt}</div>
-                ))}
-                {item.options?.filter(o => o.startsWith('Add') || o.startsWith('Extra') || o.startsWith('No')).map((mod, j) => (
-                  <div key={`mod-${j}`} className="kitchen-item-modifier">{mod}</div>
-                ))}
-                {item.notes && (
-                  <div className="kitchen-item-note">{item.notes}</div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-        {action}
+
+      {/* Progress bar */}
+      <div className="kd-ticket-prog">
+        <div className="kd-ticket-prog-fill" style={{ width: `${pct}%`, background: progressColor(pct) }} />
       </div>
+
+      {/* Header */}
+      <div className="kd-ticket-hdr">
+        <span className="kd-ticket-id">{order.id}</span>
+        <div className="kd-ticket-meta">
+          <span className="kd-ticket-time">
+            <Clock size={10} />
+            {timeAgo(order.createdAt)}
+          </span>
+          {onCancel && (
+            <button className="kd-ticket-cancel" onClick={onCancel} aria-label={`Cancel order ${order.id}`}>
+              <X size={13} />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="kd-ticket-table">
+        <span className="kd-ticket-table-dot" style={{ background: TABLE_COLORS[colorIndex % TABLE_COLORS.length] }} />
+        Table {order.tableNumber}
+      </div>
+
+      {/* Dashed divider */}
+      <div className="kd-ticket-divider" />
+
+      {/* Items */}
+      <div className="kd-ticket-items">
+        {order.items.map((item, i) => (
+          <div className="kd-ticket-item" key={i}>
+            <span className="kd-ticket-qty">{item.quantity}×</span>
+            <div className="kd-ticket-item-body">
+              <div className="kd-ticket-item-name">{item.name}</div>
+              {item.options?.map((opt, j) => (
+                <div
+                  key={j}
+                  className={/^(Add|Extra|No)\b/.test(opt) ? 'kd-ticket-mod' : 'kd-ticket-opt'}
+                >
+                  {opt}
+                </div>
+              ))}
+              {item.notes && <div className="kd-ticket-note">{item.notes}</div>}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Perforated tear line */}
+      <div className="kd-ticket-perf">
+        <span className="kd-perf-circle kd-perf-left" />
+        <span className="kd-perf-line" />
+        <span className="kd-perf-circle kd-perf-right" />
+      </div>
+
+      {/* Action */}
+      {action && <div className="kd-ticket-foot">{action}</div>}
+
     </div>
   );
 }
