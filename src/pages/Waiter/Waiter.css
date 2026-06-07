@@ -5,7 +5,8 @@
 }
 
 .waiter-header {
-  background: var(--gray-800);
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
   padding: 16px 32px;
   display: flex;
   align-items: center;
@@ -22,17 +23,17 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-md);
-  background: rgba(255,255,255,0.1);
+  background: var(--gray-100);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--white);
+  color: var(--gray-900);
   cursor: pointer;
   transition: background var(--transition-fast);
 }
 
 .waiter-home-btn:hover {
-  background: rgba(255,255,255,0.2);
+  background: var(--gray-200);
 }
 
 .waiter-brand {
@@ -49,7 +50,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--white);
+  color: var(--gray-900);
   font-weight: 700;
   font-size: 0.875rem;
 }
@@ -57,12 +58,12 @@
 .waiter-brand-info h2 {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--white);
+  color: var(--gray-900);
 }
 
 .waiter-brand-info span {
   font-size: 0.75rem;
-  color: var(--gray-400);
+  color: var(--gray-500);
 }
 
 .waiter-header-right {
@@ -95,8 +96,8 @@
 .waiter-logout-btn {
   padding: 8px 16px;
   border-radius: var(--radius-md);
-  background: rgba(255,255,255,0.1);
-  color: var(--white);
+  background: var(--gray-100);
+  color: var(--gray-900);
   font-size: 0.813rem;
   font-weight: 500;
   cursor: pointer;
@@ -185,7 +186,7 @@
 
 .waiter-section-header .count {
   background: var(--green-500);
-  color: var(--white);
+  color: var(--gray-900);
   font-size: 0.688rem;
   font-weight: 700;
   width: 22px;
@@ -221,7 +222,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: var(--white);
+  color: var(--gray-900);
 }
 
 .ready-card-header .label {
@@ -234,7 +235,7 @@
 
 .ready-card-header .wait-time {
   font-size: 0.75rem;
-  background: rgba(255,255,255,0.2);
+  background: var(--gray-200);
   padding: 3px 10px;
   border-radius: var(--radius-full);
 }
@@ -306,7 +307,7 @@
   width: 100%;
   padding: 12px;
   background: linear-gradient(135deg, #14B8A6, #0D9488);
-  color: var(--white);
+  color: var(--gray-900);
   border-radius: var(--radius-md);
   font-weight: 600;
   font-size: 0.875rem;
