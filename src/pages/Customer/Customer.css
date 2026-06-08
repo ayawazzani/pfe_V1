@@ -134,36 +134,33 @@ textarea::placeholder {
 .logo-lockup {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-weight: 700;
-  font-size: 15px;
-  min-width: 0;
+  font-size: 16px;
 }
 
 .logo-icon {
   background-color: var(--primary-color);
   color: white;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
 }
 
 .table-badge {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background-color: var(--card-bg);
   border: 1px solid var(--border-color);
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 30px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-gray);
-  white-space: nowrap;
 }
 
 .table-badge .dot {
@@ -341,36 +338,19 @@ textarea::placeholder {
   display: flex;
   flex-direction: column;
   height: 100%;
-  position: relative;
-  flex: 1;
 }
 
 .top-navbar {
   background-color: var(--card-bg);
-  padding: 12px 20px;
+  padding: 16px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  gap: 12px;
-  flex-shrink: 0;
-  max-width: 480px;
-  margin: 0 auto;
 }
 
 .search-container {
   background-color: var(--card-bg);
-  padding: 8px 20px 12px;
-  position: sticky;
-  top: 56px;
-  z-index: 45;
-  flex-shrink: 0;
-  margin-top: 56px;
+  padding: 8px 20px 16px;
 }
 
 .search-input-wrapper {
@@ -386,26 +366,21 @@ textarea::placeholder {
 }
 
 .search-input-wrapper input {
-  padding-left: 40px;
-  border-radius: 12px;
-  height: 44px;
+  padding-left: 44px;
+  border-radius: 14px;
+  height: 48px;
   background-color: #F7F8FA;
   border: none;
-  font-size: 14px;
 }
 
 .category-scroll {
   background-color: var(--card-bg);
-  padding: 0 20px 12px;
+  padding: 0 20px 16px;
   display: flex;
   gap: 12px;
   overflow-x: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  position: sticky;
-  top: 120px;
-  z-index: 40;
-  flex-shrink: 0;
 }
 
 .category-scroll::-webkit-scrollbar {
@@ -429,26 +404,22 @@ textarea::placeholder {
 }
 
 .menu-list {
-  padding: 16px 20px 20px;
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .dish-card {
   background-color: var(--card-bg);
-  border-radius: 16px;
-  padding: 12px;
+  border-radius: 20px;
+  padding: 16px;
   display: flex;
-  gap: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  gap: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
   border: 1px solid var(--border-color);
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  min-height: 100px;
+  transition: transform 0.2s;
 }
 
 .dish-card:active {
@@ -462,21 +433,20 @@ textarea::placeholder {
 }
 
 .dish-name {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text-dark);
-  margin-bottom: 4px;
-  line-height: 1.3;
+  margin-bottom: 6px;
 }
 
 .dish-desc {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-light);
-  line-height: 1.3;
-  margin-bottom: 8px;
+  line-height: 1.4;
+  margin-bottom: 12px;
   display: -webkit-box;
-  -webkit-line-clamp: 1;
-  line-clamp: 1;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -486,17 +456,17 @@ textarea::placeholder {
 }
 
 .dish-price {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--primary-color);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .dish-meta {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 11px;
+  gap: 16px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-light);
 }
@@ -504,7 +474,7 @@ textarea::placeholder {
 .meta-item {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
 }
 
 .meta-star {
@@ -521,9 +491,9 @@ textarea::placeholder {
 }
 
 .dish-image {
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
+  width: 90px;
+  height: 90px;
+  border-radius: 16px;
   object-fit: cover;
   background-color: #F7F8FA;
   display: block;
@@ -1252,7 +1222,7 @@ textarea::placeholder {
    6. Bottom Tab Bar
 ======================================================== */
 .bottom-tab-bar {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
@@ -1261,12 +1231,8 @@ textarea::placeholder {
   display: flex;
   justify-content: space-around;
   padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px));
-  z-index: 100;
+  z-index: 50;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
-  max-width: 480px;
-  margin: 0 auto;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 .tab-btn {
@@ -1696,7 +1662,6 @@ textarea::placeholder {
   /* Search */
   .search-container {
     padding: 6px 14px 12px;
-    top: 52px;
   }
   .search-input-wrapper input {
     height: 42px;
@@ -1713,7 +1678,6 @@ textarea::placeholder {
   .category-scroll {
     padding: 0 14px 12px;
     gap: 8px;
-    top: 110px;
   }
   .category-pill {
     padding: 6px 14px;
@@ -2101,7 +2065,6 @@ textarea::placeholder {
   /* Search */
   .search-container {
     padding: 6px 18px 14px;
-    top: 54px;
   }
   .search-input-wrapper input {
     height: 44px;
@@ -2112,8 +2075,6 @@ textarea::placeholder {
   .category-scroll {
     padding: 0 18px 14px;
     gap: 10px;
-    top: 118px;
-  }
   .category-pill {
     padding: 7px 16px;
     font-size: 13px;
