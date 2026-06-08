@@ -87,30 +87,8 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="login-hint">
-          <p>Quick Access</p>
-          <div
-            className="login-hint-item"
-            onClick={() => fillCredentials('admin@restoyh.com', 'admin@YH20')}
-          >
-            <span>Admin</span>
-            <span>admin@restoyh.com</span>
-          </div>
-          <div
-            className="login-hint-item"
-            onClick={() => fillCredentials('waiter@restoyh.com', 'waiter@YH20')}
-          >
-            <span>Waiter</span>
-            <span>waiter@restoyh.com</span>
-          </div>
-          <div
-            className="login-hint-item"
-            onClick={() => fillCredentials('kitchen@restoyh.com', 'kitchen@YH20')}
-          >
-            <span>Kitchen</span>
-            <span>kitchen@restoyh.com</span>
-          </div>
-        </div>
+        
+        
       </div>
     </div>
   );
