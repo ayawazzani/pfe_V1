@@ -129,7 +129,6 @@ export const tables = [
   { id: 3, number: 3, seats: 6, status: 'active' },
   { id: 4, number: 4, seats: 4, status: 'active' },
   { id: 5, number: 5, seats: 2, status: 'active' },
-  { id: 6, number: 6, seats: 8, status: 'active' },
 ];
 
 // ===== ORDERS =====
